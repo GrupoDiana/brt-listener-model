@@ -1,0 +1,217 @@
+name: CMake build
+
+on: push
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+              name: "Windows",
+              os: windows-latest,
+              triple: "windows-clang-x86_64",
+              path: "/c/ossia-sdk/llvm/bin",
+              common_flags: "-GNinja \
+                             -DCMAKE_C_COMPILER=c:/ossia-sdk/llvm/bin/clang.exe \
+                             -DCMAKE_CXX_COMPILER=c:/ossia-sdk/llvm/bin/clang++.exe \
+                             -DCMAKE_EXE_LINKER_FLAGS=\"-fuse-ld=c:/ossia-sdk/llvm/bin/ld.lld.exe --target=x86_64-windows-gnu\" \
+                             -DCMAKE_SHARED_LINKER_FLAGS=\"-fuse-ld=c:/ossia-sdk/llvm/bin/ld.lld.exe --target=x86_64-windows-gnu\" \
+                             -DCMAKE_MODULE_LINKER_FLAGS=\"-fuse-ld=c:/ossia-sdk/llvm/bin/ld.lld.exe --target=x86_64-windows-gnu\" ",
+              debug_flags: "-DCMAKE_BUILD_TYPE=Debug",
+              release_flags: "-DCMAKE_BUILD_TYPE=Release",
+              build_flags: "",
+              dependencies: "choco install -y ninja",
+              sdk: "/c/ossia-sdk",
+              pre_build: ""
+            }
+          - {
+              name: "Ubuntu (clang)",
+              os: ubuntu-latest,
+              triple: "linux-clang-x86_64",
+              path: "/opt/ossia-sdk/llvm/bin",
+              common_flags: "-DCMAKE_C_COMPILER=/usr/bin/clang-17 \
+                             -DCMAKE_CXX_COMPILER=/usr/bin/clang++-17 \
+                             -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld \
+                             -DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld \
+                             -DCMAKE_MODULE_LINKER_FLAGS=-fuse-ld=lld",
+              debug_flags: "-DCMAKE_BUILD_TYPE=Debug",
+              release_flags: "-DCMAKE_BUILD_TYPE=Release",
+              build_flags: "",
+              dependencies: "sudo apt update ; \
+                             sudo apt install lsb-release wget software-properties-common ; \
+                             curl -L https://apt.llvm.org/llvm.sh > llvm.sh ; \
+                             chmod +x ./llvm.sh ; \
+                             sudo ./llvm.sh ; \
+                             sudo apt update ; \
+                             sudo apt install ninja-build clang-17 lld-17 libc++-17-dev libc++1-17 libc++abi1-17 libc++abi-17-dev",
+              sdk: "/opt/ossia-sdk",
+              pre_build: ""
+            }
+          - {
+              name: "Ubuntu (GCC)",
+              os: ubuntu-latest,
+              triple: "linux-gcc-x86_64",
+              common_flags: "-DCMAKE_C_COMPILER=/usr/bin/gcc-13 \
+                             -DCMAKE_CXX_COMPILER=/usr/bin/g++-13",
+              debug_flags: "-DCMAKE_BUILD_TYPE=Debug",
+              release_flags: "-DCMAKE_BUILD_TYPE=Release",
+              build_flags: "",
+              dependencies: "sudo apt update ; \
+                             sudo apt install lsb-release wget software-properties-common ; \
+                             sudo add-apt-repository ppa:ubuntu-toolchain-r/test ; \
+                             sudo apt update ; \
+                             sudo apt install ninja-build gcc-13 g++-13",
+              sdk: "/opt/ossia-sdk",
+              pre_build: ""
+            }
+          - {
+              name: "macOS",
+              os: macos-13,
+              triple: "macos-clang-x86_64",
+              common_flags: "",
+              debug_flags: "-DCMAKE_BUILD_TYPE=Debug",
+              release_flags: "-DCMAKE_BUILD_TYPE=Release",
+              build_flags: "",
+              sdk: "/opt/ossia-sdk-x86_64",
+              pre_build: "sudo xcode-select -s /Applications/Xcode_15.0.app"
+            }
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkout dependencies
+        uses: actions/checkout@v4
+        with:
+          repository: ossia/score
+          submodules: "recursive"
+          path: score
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          ${{ matrix.config.dependencies }}
+
+      - name: Download SDK
+        shell: bash
+        run: |
+          curl -L https://raw.githubusercontent.com/ossia/score/master/tools/fetch-sdk.sh > fetch-sdk.sh
+          chmod +x ./fetch-sdk.sh
+          ./fetch-sdk.sh
+
+      - name: Checkout Max SDK
+        uses: actions/checkout@v4
+        with:
+          repository: jcelerier/max-sdk-base
+          submodules: "recursive"
+          path: max-sdk-base
+
+      - name: Build debug
+        shell: bash
+        run: |
+          export BUILD_DIR=build-debug
+          if [[ "${{ matrix.config.path }}" != "" ]]; then
+            export PATH=${{ matrix.config.path }}:$PATH
+          fi
+
+          export MAX_SDK=$PWD/max-sdk-base
+          export SDK_3RDPARTY=$PWD/score/3rdparty
+          export VERBOSE=1
+
+          ${{ matrix.config.pre_build }}
+
+          cmake -S $PWD -B $BUILD_DIR \
+            -DBOOST_ROOT=${{ matrix.config.sdk }}/boost \
+            -Dpybind11_DIR="$SDK_3RDPARTY/libossia/3rdparty/pybind11" \
+            -DAVND_MAXSDK_PATH=$MAX_SDK \
+            -DVST3_SDK_ROOT="$SDK_3RDPARTY/vst3" \
+            -DCMAKE_PREFIX_PATH="$SDK_3RDPARTY/libpd/pure-data/src;$SDK_3RDPARTY/libossia/3rdparty/pybind11" \
+            ${{ matrix.config.common_flags }} \
+            ${{ matrix.config.debug_flags }}
+
+          cmake --build $BUILD_DIR -- ${{ matrix.config.build_flags }}
+
+      - name: Build release
+        shell: bash
+        run: |
+          export BUILD_DIR=build-release
+          export INSTALL_DIR="$PWD/install"
+          mkdir -p "$INSTALL_DIR"
+
+          if [[ "${{ matrix.config.path }}" != "" ]]; then
+            export PATH=${{ matrix.config.path }}:$PATH
+          fi
+
+          export MAX_SDK=$PWD/max-sdk-base
+          export SDK_3RDPARTY=$PWD/score/3rdparty
+          export VERBOSE=1
+
+          ${{ matrix.config.pre_build }}
+
+          cmake -S $PWD -B $BUILD_DIR \
+            -DBOOST_ROOT="${{ matrix.config.sdk }}/boost" \
+            -Dpybind11_DIR="$SDK_3RDPARTY/libossia/3rdparty/pybind11" \
+            -DAVND_MAXSDK_PATH=$MAX_SDK \
+            -DVST3_SDK_ROOT="$SDK_3RDPARTY/vst3" \
+            -DCMAKE_PREFIX_PATH="$SDK_3RDPARTY/libpd/pure-data/src;$SDK_3RDPARTY/libossia/3rdparty/pybind11" \
+            -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 \
+            ${{ matrix.config.common_flags }} \
+            ${{ matrix.config.release_flags }}
+
+          cmake --build $BUILD_DIR -- ${{ matrix.config.build_flags }}
+
+          pwd
+          
+          ls $BUILD_DIR
+          shopt -s nullglob
+          for binding in pd max clap python standalone example vintage vst3; do
+            (
+              mkdir -p $BUILD_DIR/$binding
+              echo " === $binding === "
+              ls $BUILD_DIR/$binding
+              cd $BUILD_DIR/$binding
+              for file in *; do
+                # Zip stuff 
+                cmake -E tar cf "$INSTALL_DIR/$binding-${{ matrix.config.triple }}-$file.zip" --format=zip -- "$file"
+                rm -rf "$file"
+              done
+            )
+          done
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.config.triple }}
+          path: |
+            install/*
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Combine
+        shell: bash
+        run: |
+          find . -name '*.zip' 
+          mkdir -p output
+          find . -name '*.zip' -exec mv {} output/ \;
+
+      - name: Upload 
+        uses: xresloader/upload-to-github-release@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: "output/*"
+          branches: "main"
+          verbose: true
+          prerelease: true
+          tag_name: "continuous"
+          default_release_name: "Continuous build"
