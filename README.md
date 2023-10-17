@@ -34,7 +34,7 @@ the project on clean virtual machines.
 
 ## Max SDK
 
-[Get it there](https://cycling74.com/downloads/sdk) and pass to cmake:
+[Get it there](https://github.com/Cycling74/max6-sdk) and pass to cmake:
 ```cmake
 -DAVND_MAXSDK_PATH=path/to/maxsdk
 ```
