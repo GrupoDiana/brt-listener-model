@@ -2,8 +2,8 @@ include(FetchContent)
 
 FetchContent_Declare(
   avendish
-  GIT_REPOSITORY "https://github.com/celtera/avendish"
-  GIT_TAG  6d67263 
+  GIT_REPOSITORY "https://github.com/GrupoDiana/avendish"
+  GIT_TAG  e956c2d 
   GIT_PROGRESS true
 )
 FetchContent_Populate(avendish)
