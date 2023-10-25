@@ -4,7 +4,7 @@
 #include <halp/layout.hpp>
 #include <halp/meta.hpp>
 
-struct MyProcessor::ui
+struct BrtListenerModel::ui
 {
   // If your compiler is recent enough:
   // using enum halp::colors;

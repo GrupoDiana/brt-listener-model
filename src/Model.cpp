@@ -1,6 +1,6 @@
 #include "Model.hpp"
 
-void MyProcessor::operator()(int N)
+void BrtListenerModel::operator()(int N)
 {
   for(int i = 0; i < this->inputs.audio.channels(); i++)
   {
