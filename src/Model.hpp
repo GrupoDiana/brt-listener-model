@@ -3,6 +3,8 @@
 #include <halp/controls.hpp>
 #include <halp/meta.hpp>
 
+#include <BRTLibrary.h>
+
 #include <iostream>
 
 class BrtListenerModel
@@ -36,4 +38,9 @@ public:
 
   // Defined in UI.hpp
   struct ui;
+
+  // BRT vars	
+	Common::CGlobalParameters globalParameters;
+	BRTBase::CBRTManager brtManager;
+	std::shared_ptr<BRTListenerModel::CListenerHRTFbasedModel> listener;	
 };
