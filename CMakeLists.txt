@@ -21,12 +21,12 @@ avnd_make_pd(
   TARGET BrtListenerModel
   MAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/src/Processor.hpp"
   MAIN_CLASS BrtListenerModel
-  C_NAME your_processor
+  C_NAME brt_listener_model
 )
 
 avnd_make_vst3(
   TARGET BrtListenerModel
   MAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/src/Processor.hpp"
   MAIN_CLASS BrtListenerModel
-  C_NAME your_processor
+  C_NAME brt_listener_model
 )
