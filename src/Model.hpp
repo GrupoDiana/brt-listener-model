@@ -10,7 +10,7 @@
 #define SOFA_FILEPATH "hrtf.sofa"
 #define HRTFRESAMPLINGSTEP 15
 #define ILD_NearFieldEffect_44100 "NearFieldCompensation_ILD_44100.sofa"
-#define SOURCE1_INITIAL_AZIMUTH     90
+#define SOURCE1_INITIAL_AZIMUTH     PI_F / 2.0
 #define SOURCE1_INITIAL_ELEVATION   0
 #define SOURCE1_INITIAL_DISTANCE    2
 
@@ -19,16 +19,14 @@ class BrtListenerModel
 public:
 #ifdef NDEBUG
   halp_meta(name, "Brt Listener Model")
+  halp_meta(uuid, "32b00817-9c91-45b7-870e-fd3438a2c696")
 #else
   halp_meta(name, "Brt Listener Model Debug")
+    halp_meta(uuid, "410adb32-ed75-4908-8281-c5540b5870b0")
+
 #endif
   halp_meta(c_name, "brt_listener_model")
 
-  // CHANGE THIS !!
-  // - On linux: uuidgen | xargs printf | xclip -selection clipboard
-  //   will copy one on the clipboard
-  // - uuidgen exists on Mac and Windows too
-  halp_meta(uuid, "32b00817-9c91-45b7-870e-fd3438a2c696")
   // halp_meta(channels, 2)
 
   struct
@@ -40,6 +38,12 @@ public:
           std::cerr << "okie " << value << "\n"; 
       }
     } sAzimuth;
+    struct
+        : halp::hslider_f32<
+              "Source Elevation (0 is 90,  1 is -90)", halp::range{.min = 0., .max = 1., .init = 0.5}>
+    {
+      void update(BrtListenerModel& m) { std::cerr << "okie " << value << "\n"; }
+    } sElevation;
   } inputs;
 
   struct
@@ -62,6 +66,20 @@ public:
   void prepare(halp::setup info);
 
   /**
+   * @brief Set the Source Elevation in radians (0 to 2*PI)
+   * 
+   * @param newElevation 
+   */
+  void setSourceElevation(float newElevation);
+
+  /**
+   * @brief Set the Source Azimuth in a value that goes from 0 (90) to 1 (-90 or 270 deg)
+   * 
+   * @param vstValue 
+   */
+  void setVST3SourceElevation(float vstValue);
+
+    /**
    * @brief Set the Source Azimuth in radians (0 to 2*PI)
    * 
    * @param newAzimuth 
@@ -114,6 +132,8 @@ private:
 	BRTBase::CBRTManager brtManager;
 	std::shared_ptr<BRTListenerModel::CListenerHRTFbasedModel> listener;
   std::shared_ptr<BRTSourceModel::CSourceSimpleModel> source;
+  float sourceAzimuth{SOURCE1_INITIAL_AZIMUTH};
+  float sourceElevation{SOURCE1_INITIAL_ELEVATION};
   BRTReaders::CSOFAReader sofaReader;
   std::vector<std::shared_ptr<BRTServices::CHRTF>> HRTF_list;  
   std::vector<std::shared_ptr<BRTServices::CILD>> ILD_list;    	

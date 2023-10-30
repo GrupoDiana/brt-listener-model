@@ -4,17 +4,17 @@
 
 Common::CVector3 BrtListenerModel::Spherical2Cartesians(float azimuth, float elevation, float radius) {
 
+    Common::CVector3 globalPos = listener->GetListenerTransform().GetPosition();
+
     float x = radius * cos(azimuth) * cos(elevation);
     float y = radius * sin(azimuth) * cos(elevation);
     float z = radius * sin(elevation);
 
-    Common::CVector3 pos = listener->GetListenerTransform().GetPosition();
+    globalPos.x += x;
+    globalPos.y += y;
+    globalPos.z += z;
 
-    pos.x = pos.x + x;
-    pos.y = pos.y + y;
-    pos.z = 0.0f;
-
-    return pos;
+    return globalPos;
 }
 
 void BrtListenerModel::operator()(int bufferSize)
@@ -25,7 +25,10 @@ void BrtListenerModel::operator()(int bufferSize)
 #if defined(AVND_VST3)
     float sAzimuth = inputs.sAzimuth.value;
     setVST3SourceAzimuth(sAzimuth);
+    float sElevation = inputs.sElevation.value;
+    setVST3SourceElevation(sElevation);
 #endif 
+
   CMonoBuffer<float> inputBuffer(&in[0][0], &in[0][bufferSize]);
   source->SetBuffer(inputBuffer);
   brtManager.ProcessAll();
@@ -83,7 +86,9 @@ void BrtListenerModel::prepareBRT()
         source = brtManager.CreateSoundSource<BRTSourceModel::CSourceSimpleModel>("source1");    // Instatiate a BRT Sound Source
         listener->ConnectSoundSource(source);                                                   // Connect Source to the listener
     brtManager.EndSetup();          
-    Common::CTransform sourcePose = Common::CTransform();                  
+    Common::CTransform sourcePose = Common::CTransform();  
+    sourceAzimuth = SOURCE1_INITIAL_AZIMUTH;
+    sourceElevation = SOURCE1_INITIAL_ELEVATION;
     sourcePose.SetPosition(Spherical2Cartesians(SOURCE1_INITIAL_AZIMUTH, SOURCE1_INITIAL_ELEVATION, SOURCE1_INITIAL_DISTANCE));
     source->SetSourceTransform(sourcePose);   
 
@@ -167,25 +172,46 @@ float map(float value, float start1, float stop1, float start2, float stop2)
     {
         volatile int errorInf;
     }
-    return outgoing;
 #endif
+    return outgoing;
 }
+
 
 void BrtListenerModel::setVST3SourceAzimuth(float vstValue)
 {
-    // FIXME: Make sure vstValue is between 0 and 1. 
-    float sourceAzimuth = 0.0;
-    if(vstValue <= 0.5) sourceAzimuth = map(vstValue, 0, 0.5, PI_F / 2.0, 0);
-    else sourceAzimuth = map(vstValue, 0.5, 1, 2.0 * PI_F, 3.0 * PI_F / 2.0);
-    setSourceAzimuth(sourceAzimuth);
+    // FIXME: Make sure vstValue is between 0 and 1.
+    float newAzimuth = 0.0;
+    if(vstValue <= 0.5) newAzimuth = map(vstValue, 0, 0.5, PI_F / 2.0, 0);
+    else newAzimuth = map(vstValue, 0.5, 1, 2.0 * PI_F, 3.0 * PI_F / 2.0);
+    setSourceAzimuth(newAzimuth);
 }
 
 void BrtListenerModel::setSourceAzimuth(float newAzimuth)
 {
     Common::CVector3 newPosition;
-    newPosition = Spherical2Cartesians(newAzimuth, SOURCE1_INITIAL_ELEVATION, SOURCE1_INITIAL_DISTANCE);
+    newPosition = Spherical2Cartesians(newAzimuth, sourceElevation, SOURCE1_INITIAL_DISTANCE);
     Common::CTransform newPose = source->GetCurrentSourceTransform();
     newPose.SetPosition(newPosition);
     source->SetSourceTransform(newPose);
+    sourceAzimuth = newAzimuth;
 }
 
+void BrtListenerModel::setVST3SourceElevation(float vstValue)
+{
+    // FIXME: Make sure vstValue is between 0 and 1.
+    float newElevation = 0.0;
+    if(vstValue <= 0.5) newElevation = map(vstValue, 0, 0.5, PI_F / 2.0, 0);
+    else newElevation = map(vstValue, 0.5, 1, 2.0 * PI_F, 3.0 * PI_F / 2.0);
+    setSourceElevation(newElevation);
+}
+
+void BrtListenerModel::setSourceElevation(float newElevation)
+{
+    Common::CVector3 newPosition;
+    newPosition = Spherical2Cartesians(
+        sourceAzimuth, newElevation, SOURCE1_INITIAL_DISTANCE);
+    Common::CTransform newPose = source->GetCurrentSourceTransform();
+    newPose.SetPosition(newPosition);
+    source->SetSourceTransform(newPose);
+    sourceElevation = newElevation;
+}
