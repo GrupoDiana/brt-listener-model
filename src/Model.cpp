@@ -21,6 +21,11 @@ void BrtListenerModel::operator()(int bufferSize)
 {
   auto & in = inputs.audio;
   auto & out = outputs.audio; 
+
+#if defined(AVND_VST3)
+    float sAzimuth = inputs.sAzimuth.value;
+    setVST3SourceAzimuth(sAzimuth);
+#endif 
   CMonoBuffer<float> inputBuffer(&in[0][0], &in[0][bufferSize]);
   source->SetBuffer(inputBuffer);
   brtManager.ProcessAll();
@@ -78,7 +83,7 @@ void BrtListenerModel::prepareBRT()
         source = brtManager.CreateSoundSource<BRTSourceModel::CSourceSimpleModel>("source1");    // Instatiate a BRT Sound Source
         listener->ConnectSoundSource(source);                                                   // Connect Source to the listener
     brtManager.EndSetup();          
-    Common::CTransform sourcePose = Common::CTransform();                         
+    Common::CTransform sourcePose = Common::CTransform();                  
     sourcePose.SetPosition(Spherical2Cartesians(SOURCE1_INITIAL_AZIMUTH, SOURCE1_INITIAL_ELEVATION, SOURCE1_INITIAL_DISTANCE));
     source->SetSourceTransform(sourcePose);   
 
@@ -139,3 +144,48 @@ bool BrtListenerModel::LoadILD(const std::string & _ildFilePath) {
         return false;
     }            
 }
+
+/*
+  This function is based on PApplet::map which is part of the Processing project - http://processing.org
+
+  Copyright (c) 2012-15 The Processing Foundation
+  Copyright (c) 2004-12 Ben Fry and Casey Reas
+  Copyright (c) 2001-04 Massachusetts Institute of Technology
+
+  distributed under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation, version 2.1.
+*/
+float map(float value, float start1, float stop1, float start2, float stop2)
+{
+    float outgoing = start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
+#ifndef NDEBUG
+    if(std::isnan(outgoing))
+    {
+        volatile int errorNan;
+    }
+    else if(std::isinf(outgoing))
+    {
+        volatile int errorInf;
+    }
+    return outgoing;
+#endif
+}
+
+void BrtListenerModel::setVST3SourceAzimuth(float vstValue)
+{
+    // FIXME: Make sure vstValue is between 0 and 1. 
+    float sourceAzimuth = 0.0;
+    if(vstValue <= 0.5) sourceAzimuth = map(vstValue, 0, 0.5, PI_F / 2.0, 0);
+    else sourceAzimuth = map(vstValue, 0.5, 1, 2.0 * PI_F, 3.0 * PI_F / 2.0);
+    setSourceAzimuth(sourceAzimuth);
+}
+
+void BrtListenerModel::setSourceAzimuth(float newAzimuth)
+{
+    Common::CVector3 newPosition;
+    newPosition = Spherical2Cartesians(newAzimuth, SOURCE1_INITIAL_ELEVATION, SOURCE1_INITIAL_DISTANCE);
+    Common::CTransform newPose = source->GetCurrentSourceTransform();
+    newPose.SetPosition(newPosition);
+    source->SetSourceTransform(newPose);
+}
+

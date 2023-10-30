@@ -34,12 +34,12 @@ public:
   struct
   {
     halp::fixed_audio_bus<"Input", float, 1> audio;
-    struct : halp::hslider_f32<"Gain", halp::range{.min = 0., .max = 1., .init = 0.5}>
+    struct : halp::hslider_f32<"Source Azimuth (0 is 90,  1 is -90)", halp::range{.min = 0., .max = 1., .init = 0}>
     {
       void update(BrtListenerModel& m) { 
           std::cerr << "okie " << value << "\n"; 
       }
-    } gain;
+    } sAzimuth;
   } inputs;
 
   struct
@@ -60,6 +60,20 @@ public:
    * @param info provides all the audio state
    */
   void prepare(halp::setup info);
+
+  /**
+   * @brief Set the Source Azimuth in radians (0 to 2*PI)
+   * 
+   * @param newAzimuth 
+   */
+  void setSourceAzimuth(float newAzimuth);
+
+  /**
+   * @brief Set the Source Azimuth in a value that goes from 0 (90) to 1 (-90 or 270 deg)
+   * 
+   * @param vstValue 
+   */
+  void setVST3SourceAzimuth(float vstValue);
 
   // Defined in UI.hpp
   struct ui;
@@ -89,7 +103,9 @@ private:
    * @return true 
    * @return false 
    */
-  bool LoadILD(const std::string & _filePath);
+  bool LoadILD(const std::string& _filePath);
+
+
 
   Common::CVector3 Spherical2Cartesians(float azimuth, float elevation, float radius);
 
