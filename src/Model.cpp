@@ -64,9 +64,28 @@ void BrtListenerModel::prepareBRT()
   // is telling me the working directory is (chapuzza). 
   namespace fs = std::filesystem;
   volatile std::string pwd = fs::current_path().string();
+  fs::path sofaFilePath;
+  fs::path ildFilePath;
+
+#ifdef AVND_VST3
+ #ifdef _WIN32
+  //char* appdata = std::getenv("APPDATA");
+  auto resourcePath = fs::path{std::getenv("APPDATA")};
+#endif
+  resourcePath /= "es.uma.3ddiana.brt/Resources";
+  if(fs::exists(resourcePath))
+  {
+      sofaFilePath = resourcePath / "HRTF";
+      ildFilePath = resourcePath / "ILD";
+  }
+
+#endif
+
+  sofaFilePath.append(SOFA_FILEPATH);
+  ildFilePath.append(ILD_NearFieldEffect_44100);
 
   // Load hardcoded HRTF
-  bool hrtfSofaLoaded = LoadSofaFile(SOFA_FILEPATH);
+  bool hrtfSofaLoaded = LoadSofaFile(sofaFilePath.string());
 
   // Set first HRTF for listener
   if (hrtfSofaLoaded) {
@@ -74,7 +93,7 @@ void BrtListenerModel::prepareBRT()
   }
 
   // LOAD NEARFIELD ILD coefficients 
-    bool ildSofaLoaded = LoadILD(ILD_NearFieldEffect_44100);
+    bool ildSofaLoaded = LoadILD(ildFilePath.string());
     // Set to the listener
     if (ildSofaLoaded) {
         listener->SetILD(ILD_list[0]);

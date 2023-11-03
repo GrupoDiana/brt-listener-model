@@ -1,0 +1,1 @@
+Navigate to scripts subdirectory and run "setup_brt_run_me_as_admin.bat" as administrator! 
