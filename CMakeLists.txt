@@ -38,7 +38,7 @@ if (BRT_CREATE_VST3_INSTALLER)
     install(FILES scripts/readme.txt DESTINATION brt/)
     install(FILES scripts/setup_brt_run_me_as_admin.bat DESTINATION brt/scripts)
   endif(WIN32)
-  install(DIRECTORY resources DESTINATION brt/resources/)
+  install(DIRECTORY resources DESTINATION brt)
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/vst3/ DESTINATION brt/vst3plugins/)
   # https://stackoverflow.com/questions/7050997/zip-files-using-cmake
   set(CPACK_GENERATOR "ZIP")
