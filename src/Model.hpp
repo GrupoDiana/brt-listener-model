@@ -44,6 +44,10 @@ public:
     {
       void update(BrtListenerModel& m) { std::cerr << "okie " << value << "\n"; }
     } sElevation;
+    struct : halp::hslider_f32<"Source Distance (0 is 0.1m, 1 is 2m)", halp::range{.min = 0., .max=1., .init = 0.5}>
+    {
+      void update(BrtListenerModel& m) {std::cerr << "okie " << value << "\n"; }
+    } sDistance;
   } inputs;
 
   struct
@@ -64,6 +68,20 @@ public:
    * @param info provides all the audio state
    */
   void prepare(halp::setup info);
+
+  /**
+   * @brief Set the Source Distance in m (0.1 to 2m)
+   * 
+   * @param newDistance 
+   */
+  void setSourceDistance(float newDistance);
+
+  /**
+   * @brief Set the source distance in a value that goes from 0 (0.1) to 1 ()
+   * 
+   * @param vstValue 
+   */
+  void setVST3SourceDistance(float vstValue);
 
   /**
    * @brief Set the Source Elevation in radians (0 to 2*PI)
@@ -134,6 +152,7 @@ private:
   std::shared_ptr<BRTSourceModel::CSourceSimpleModel> source;
   float sourceAzimuth{SOURCE1_INITIAL_AZIMUTH};
   float sourceElevation{SOURCE1_INITIAL_ELEVATION};
+  float sourceDistance{SOURCE1_INITIAL_DISTANCE};
   BRTReaders::CSOFAReader sofaReader;
   std::vector<std::shared_ptr<BRTServices::CHRTF>> HRTF_list;  
   std::vector<std::shared_ptr<BRTServices::CILD>> ILD_list;    	

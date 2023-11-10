@@ -27,6 +27,8 @@ void BrtListenerModel::operator()(int bufferSize)
     setVST3SourceAzimuth(sAzimuth);
     float sElevation = inputs.sElevation.value;
     setVST3SourceElevation(sElevation);
+    float sDistance = inputs.sDistance.value;
+    setVST3SourceDistance(sDistance);
 #endif 
 
   CMonoBuffer<float> inputBuffer(&in[0][0], &in[0][bufferSize]);
@@ -60,8 +62,8 @@ void BrtListenerModel::prepareBRT()
   listener->SetListenerTransform(listenerPosition);
 
   // FIXME: For different platforms and bindings this will be a completely different
-  // path, so not sure where to put sofa files. I put this line here to debug and copy files to where the debugger
-  // is telling me the working directory is (chapuzza). 
+  // Will designing how to approach this, I put this line here to debug and copy files to where the debugger
+  // is telling me the working directory is, and then just copy the files there.  (chapuzza). 
   namespace fs = std::filesystem;
   volatile std::string pwd = fs::current_path().string();
   fs::path sofaFilePath;
@@ -72,7 +74,7 @@ void BrtListenerModel::prepareBRT()
   //char* appdata = std::getenv("APPDATA");
   auto resourcePath = fs::path{std::getenv("APPDATA")};
 #endif
-  resourcePath /= "es.uma.3ddiana.brt/Resources";
+  resourcePath.append("es.uma.3ddiana.brt").append("Resources");
   if(fs::exists(resourcePath))
   {
       sofaFilePath = resourcePath / "HRTF";
@@ -82,6 +84,7 @@ void BrtListenerModel::prepareBRT()
 #endif
 
   sofaFilePath.append(SOFA_FILEPATH);
+  volatile bool sofaExists = fs::exists(sofaFilePath);
   ildFilePath.append(ILD_NearFieldEffect_44100);
 
   // Load hardcoded HRTF
@@ -108,6 +111,7 @@ void BrtListenerModel::prepareBRT()
     Common::CTransform sourcePose = Common::CTransform();  
     sourceAzimuth = SOURCE1_INITIAL_AZIMUTH;
     sourceElevation = SOURCE1_INITIAL_ELEVATION;
+    sourceDistance = SOURCE1_INITIAL_DISTANCE;
     sourcePose.SetPosition(Spherical2Cartesians(SOURCE1_INITIAL_AZIMUTH, SOURCE1_INITIAL_ELEVATION, SOURCE1_INITIAL_DISTANCE));
     source->SetSourceTransform(sourcePose);   
 
@@ -208,7 +212,7 @@ void BrtListenerModel::setVST3SourceAzimuth(float vstValue)
 void BrtListenerModel::setSourceAzimuth(float newAzimuth)
 {
     Common::CVector3 newPosition;
-    newPosition = Spherical2Cartesians(newAzimuth, sourceElevation, SOURCE1_INITIAL_DISTANCE);
+    newPosition = Spherical2Cartesians(newAzimuth, sourceElevation, sourceDistance);
     Common::CTransform newPose = source->GetCurrentSourceTransform();
     newPose.SetPosition(newPosition);
     source->SetSourceTransform(newPose);
@@ -228,9 +232,27 @@ void BrtListenerModel::setSourceElevation(float newElevation)
 {
     Common::CVector3 newPosition;
     newPosition = Spherical2Cartesians(
-        sourceAzimuth, newElevation, SOURCE1_INITIAL_DISTANCE);
+        sourceAzimuth, newElevation, sourceDistance);
     Common::CTransform newPose = source->GetCurrentSourceTransform();
     newPose.SetPosition(newPosition);
     source->SetSourceTransform(newPose);
     sourceElevation = newElevation;
+}
+
+void BrtListenerModel::setVST3SourceDistance(float vstValue)
+{
+    float newDistance = 0.0;
+    newDistance = map(vstValue, 0., 1., 0.1, 2.0);
+    setSourceDistance(newDistance);
+}
+
+void BrtListenerModel::setSourceDistance(float newDistance)
+{
+    Common::CVector3 newPosition;
+    newPosition = Spherical2Cartesians(
+        sourceAzimuth, sourceElevation, newDistance);
+    Common::CTransform newPose = source->GetCurrentSourceTransform();
+    newPose.SetPosition(newPosition);
+    source->SetSourceTransform(newPose);
+    sourceDistance = newDistance; 
 }
