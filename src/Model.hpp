@@ -32,24 +32,13 @@ public:
   struct
   {
     halp::fixed_audio_bus<"Input", float, 1> audio;
-    struct : halp::hslider_f32<"Source Azimuth (0 is 90,  1 is -90)", halp::range{.min = 0., .max = 1., .init = 0}>
-    {
-      void update(BrtListenerModel& m) { 
-          std::cerr << "okie " << value << "\n"; 
-      }
-    } sAzimuth;
-    struct
-        : halp::hslider_f32<
-              "Source Elevation (0 is 90,  1 is -90)", halp::range{.min = 0., .max = 1., .init = 0.5}>
-    {
-      void update(BrtListenerModel& m) { std::cerr << "okie " << value << "\n"; }
-    } sElevation;
-    struct : halp::hslider_f32<"Source Distance (0 is 0.1m, 1 is 2m)", halp::range{.min = 0., .max=1., .init = 0.5}>
-    {
-      void update(BrtListenerModel& m) {std::cerr << "okie " << value << "\n"; }
-    } sDistance;
+#if defined(AVND_VST3)
+    // VST3 input parameters ranging 0 to 1
+    struct : halp::hslider_f32<"Source Azimuth (0 is 90,  1 is -90)",   halp::range{.min = 0., .max = 1., .init = 0}> {} sAzimuth;
+    struct : halp::hslider_f32<"Source Elevation (0 is 90,  1 is -90)", halp::range{.min = 0., .max = 1., .init = 0}> {} sElevation;
+    struct : halp::hslider_f32<"Source Distance (0 is 0.1m, 1 is 2m)",  halp::range{.min = 0., .max = 1., .init = 0}> {} sDistance;
   } inputs;
-
+#endif 
   struct
   {
     halp::fixed_audio_bus<"Input", float, 2> audio;
@@ -68,14 +57,7 @@ public:
    * @param info provides all the audio state
    */
   void prepare(halp::setup info);
-
-  /**
-   * @brief Set the Source Distance in m (0.1 to 2m)
-   * 
-   * @param newDistance 
-   */
-  void setSourceDistance(float newDistance);
-
+#if defined(AVND_VST3)
   /**
    * @brief Set the source distance in a value that goes from 0 (0.1) to 1 ()
    * 
@@ -84,18 +66,34 @@ public:
   void setVST3SourceDistance(float vstValue);
 
   /**
-   * @brief Set the Source Elevation in radians (0 to 2*PI)
-   * 
-   * @param newElevation 
-   */
-  void setSourceElevation(float newElevation);
-
-  /**
    * @brief Set the Source Azimuth in a value that goes from 0 (90) to 1 (-90 or 270 deg)
    * 
    * @param vstValue 
    */
   void setVST3SourceElevation(float vstValue);
+ 
+  /**
+   * @brief Set the Source Azimuth in a value that goes from 0 (90) to 1 (-90 or 270 deg)
+   * 
+   * @param vstValue 
+   */
+  void setVST3SourceAzimuth(float vstValue);
+#endif
+
+    /**
+   * @brief Set the Source Distance in m (0.1 to 2m)
+   * 
+   * @param newDistance 
+   */
+  void setSourceDistance(float newDistance);
+
+
+    /**
+   * @brief Set the Source Elevation in radians (0 to 2*PI)
+   * 
+   * @param newElevation 
+   */
+  void setSourceElevation(float newElevation);
 
     /**
    * @brief Set the Source Azimuth in radians (0 to 2*PI)
@@ -103,13 +101,6 @@ public:
    * @param newAzimuth 
    */
   void setSourceAzimuth(float newAzimuth);
-
-  /**
-   * @brief Set the Source Azimuth in a value that goes from 0 (90) to 1 (-90 or 270 deg)
-   * 
-   * @param vstValue 
-   */
-  void setVST3SourceAzimuth(float vstValue);
 
   // Defined in UI.hpp
   struct ui;
