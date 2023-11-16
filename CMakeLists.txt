@@ -38,9 +38,9 @@ if (BRT_CREATE_VST3_INSTALLER)
 #1) First install files to directory set by CMAKE_INSTALL_PATH
   install(FILES scripts/readme.txt DESTINATION brt/)
   if (WIN32)
-    install(PROGRAMS scripts/setup_brt_run_me_as_admin.bat DESTINATION brt/scripts)
+    install(PROGRAMS scripts/setup_win.bat DESTINATION brt/scripts)
   elseif(APPLE)
-    install(PROGRAMS scripts/setup_brt_sudo_run_me.sh DESTINATION brt/scripts )
+    install(PROGRAMS scripts/setup_mac.sh DESTINATION brt/scripts )
   endif(WIN32)
 
   install(DIRECTORY resources DESTINATION brt)
