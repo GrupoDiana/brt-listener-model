@@ -134,7 +134,10 @@ bool BrtListenerModel::LoadSofaFile(const std::string & _filePath) {
     }
     if (globalParameters.GetSampleRate() != sampleRateInSOFAFile)
     {
-        std::cout<<"The sample rate in HRTF SOFA file doesn't match the configuration." << std::endl;
+        std::cout<< "The sample rate (" << sampleRateInSOFAFile 
+                 << ") in the HRTF SOFA file "<< _filePath 
+                 << "doesn't match the audio configuration (" << globalParameters.GetSampleRate() 
+                 << ")." << std::endl;
         return false;
     }
     bool result = sofaReader.ReadHRTFFromSofa(_filePath, hrtf, HRTFRESAMPLINGSTEP);
