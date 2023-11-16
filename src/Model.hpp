@@ -11,8 +11,8 @@
 constexpr int HRTFRESAMPLINGSTEP = 15;
 #define ILD_NearFieldEffect_44100 "NearFieldCompensation_ILD_44100.sofa"
 constexpr float SOURCE1_INITIAL_AZIMUTH = 3.14159265358979f / 2.0;
-constexpr float SOURCE1_INITIAL_ELEVATION =  0;
-constexpr float SOURCE1_INITIAL_DISTANCE = 2;
+constexpr float SOURCE1_INITIAL_ELEVATION = 3.14159265358979f / 2.0;
+constexpr float SOURCE1_INITIAL_DISTANCE = 0.1;
 
 class BrtListenerModel
 {
