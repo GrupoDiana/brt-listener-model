@@ -73,7 +73,9 @@ void BrtListenerModel::prepareBRT()
  #ifdef _WIN32
   //char* appdata = std::getenv("APPDATA");
   auto resourcePath = fs::path{std::getenv("APPDATA")};
-#endif
+#elif __APPLE__
+  auto resourcePath = fs::path("/Library/Application Support");
+#endif 
   resourcePath.append("es.uma.3ddiana.brt").append("Resources");
   if(fs::exists(resourcePath))
   {

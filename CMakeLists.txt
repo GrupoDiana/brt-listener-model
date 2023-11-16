@@ -33,14 +33,25 @@ avnd_make_vst3(
 
 option (BRT_CREATE_VST3_INSTALLER "Create or not an installer for the VST3 Plugin" ON)
 
+# Create zip file for VST3 plugin installation.  
 if (BRT_CREATE_VST3_INSTALLER)
+#1) First install files to directory set by CMAKE_INSTALL_PATH
+  install(FILES scripts/readme.txt DESTINATION brt/)
   if (WIN32)
-    install(FILES scripts/readme.txt DESTINATION brt/)
-    install(FILES scripts/setup_brt_run_me_as_admin.bat DESTINATION brt/scripts)
+    install(PROGRAMS scripts/setup_brt_run_me_as_admin.bat DESTINATION brt/scripts)
+  elseif(APPLE)
+    install(PROGRAMS scripts/setup_brt_sudo_run_me.sh DESTINATION brt/scripts )
   endif(WIN32)
+
   install(DIRECTORY resources DESTINATION brt)
-  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/vst3/ DESTINATION brt/vst3plugins/)
-  # https://stackoverflow.com/questions/7050997/zip-files-using-cmake
+  if (WIN32)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/vst3/ DESTINATION brt/vst3plugins/)
+  elseif(APPLE)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/VST3/Release/ DESTINATION brt/vst3plugins/)
+  endif(WIN32)
+
+# 2) Package files from installation directory into zip file
+# https://stackoverflow.com/questions/7050997/zip-files-using-cmake
   set(CPACK_GENERATOR "ZIP")
   set(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}")
   set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)

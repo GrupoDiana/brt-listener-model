@@ -1,1 +1,3 @@
-Navigate to scripts subdirectory and run "setup_brt_run_me_as_admin.bat" as administrator! 
+- In Windows: Navigate to scripts subdirectory and run "setup_win.bat" as administrator.  
+- In macOS: Open terminal, cd to scripts subdirectory and execute "sudo ./setup_mac.sh"
+   

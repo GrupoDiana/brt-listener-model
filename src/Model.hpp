@@ -8,11 +8,11 @@
 #include <iostream>
 
 #define SOFA_FILEPATH "hrtf.sofa"
-#define HRTFRESAMPLINGSTEP 15
+constexpr int HRTFRESAMPLINGSTEP = 15;
 #define ILD_NearFieldEffect_44100 "NearFieldCompensation_ILD_44100.sofa"
-#define SOURCE1_INITIAL_AZIMUTH     PI_F / 2.0
-#define SOURCE1_INITIAL_ELEVATION   0
-#define SOURCE1_INITIAL_DISTANCE    2
+constexpr float SOURCE1_INITIAL_AZIMUTH = 3.14159265358979f / 2.0;
+constexpr float SOURCE1_INITIAL_ELEVATION =  0;
+constexpr float SOURCE1_INITIAL_DISTANCE = 2;
 
 class BrtListenerModel
 {
