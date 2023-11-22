@@ -22,7 +22,9 @@ public:
   halp_meta(uuid, "32b00817-9c91-45b7-870e-fd3438a2c696")
 #else
   halp_meta(name, "Brt Listener Model Debug")
-    halp_meta(uuid, "410adb32-ed75-4908-8281-c5540b5870b0")
+  halp_meta(uuid, "410adb32-ed75-4908-8281-c5540b5870b0")
+  halp_meta(vendor, "University of Malaga")
+  halp_meta(url, "https://www.diana.uma.es")
 
 #endif
   halp_meta(c_name, "brt_listener_model")
@@ -34,11 +36,13 @@ public:
     halp::fixed_audio_bus<"Input", float, 1> audio;
 #if defined(AVND_VST3)
     // VST3 input parameters ranging 0 to 1
-    struct : halp::hslider_f32<"Source Azimuth (0 is 90,  1 is -90)",   halp::range{.min = 0., .max = 1., .init = 0}> {} sAzimuth;
-    struct : halp::hslider_f32<"Source Elevation (0 is 90,  1 is -90)", halp::range{.min = 0., .max = 1., .init = 0}> {} sElevation;
-    struct : halp::hslider_f32<"Source Distance (0 is 0.1m, 1 is 2m)",  halp::range{.min = 0., .max = 1., .init = 0}> {} sDistance;
-  } inputs;
+    halp::hslider_f32<"Source Azimuth (0 is 90,  1 is -90)",   halp::range{.min = 0., .max = 1., .init = 0}>  sAzimuth;
+    halp::hslider_f32<"Source Elevation (0 is 90,  1 is -90)", halp::range{.min = 0., .max = 1., .init = 0}>  sElevation;
+    halp::hslider_f32<"Source Distance (0 is 0.1m, 1 is 2m)",  halp::range{.min = 0., .max = 1., .init = 0}>  sDistance;
 #endif 
+    halp::toggle<"Enable Near Field", halp::toggle_setup{.init = true}> nearFieldEn; 
+  } inputs;
+
   struct
   {
     halp::fixed_audio_bus<"Input", float, 2> audio;
@@ -137,6 +141,7 @@ private:
   Common::CVector3 Spherical2Cartesians(float azimuth, float elevation, float radius);
 
   // BRT vars	
+  bool ready{false};
 	Common::CGlobalParameters globalParameters;
 	BRTBase::CBRTManager brtManager;
 	std::shared_ptr<BRTListenerModel::CListenerHRTFbasedModel> listener;

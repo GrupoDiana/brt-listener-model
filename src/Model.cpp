@@ -22,6 +22,12 @@ void BrtListenerModel::operator()(int bufferSize)
   auto & in = inputs.audio;
   auto & out = outputs.audio; 
 
+    if (ready)
+    {
+        if (inputs.nearFieldEn)  listener->EnableNearFieldEffect();
+        else listener->DisableNearFieldEffect();
+    } 
+
 #if defined(AVND_VST3)
     float sAzimuth = inputs.sAzimuth.value;
     setVST3SourceAzimuth(sAzimuth);
@@ -108,8 +114,7 @@ void BrtListenerModel::prepareBRT()
  
     brtManager.BeginSetup();
         source = brtManager.CreateSoundSource<BRTSourceModel::CSourceSimpleModel>("source1");    // Instatiate a BRT Sound Source
-        listener->ConnectSoundSource(source);
-        listener->EnableNearFieldEffect();                                                   // Connect Source to the listener
+        listener->ConnectSoundSource(source);                                                 // Connect Source to the listener
     brtManager.EndSetup();          
     Common::CTransform sourcePose = Common::CTransform();  
     sourceAzimuth = SOURCE1_INITIAL_AZIMUTH;
@@ -117,7 +122,7 @@ void BrtListenerModel::prepareBRT()
     sourceDistance = SOURCE1_INITIAL_DISTANCE;
     sourcePose.SetPosition(Spherical2Cartesians(SOURCE1_INITIAL_AZIMUTH, SOURCE1_INITIAL_ELEVATION, SOURCE1_INITIAL_DISTANCE));
     source->SetSourceTransform(sourcePose);   
-
+    ready = true;
 }
 
 
