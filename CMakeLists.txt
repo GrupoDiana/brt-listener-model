@@ -17,12 +17,12 @@ target_include_directories(BrtListenerModel
 
 target_link_libraries(BrtListenerModel PUBLIC brt )
 
-# avnd_make_pd(
-#   TARGET BrtListenerModel
-#   MAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/src/Processor.hpp"
-#   MAIN_CLASS BrtListenerModel
-#   C_NAME brt_listener_model
-# )
+avnd_make_pd(
+  TARGET BrtListenerModel
+  MAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/src/Processor.hpp"
+  MAIN_CLASS BrtListenerModel
+  C_NAME brt_listener_model
+)
 
 avnd_make_vst3(
   TARGET BrtListenerModel
@@ -30,6 +30,14 @@ avnd_make_vst3(
   MAIN_CLASS BrtListenerModel
   C_NAME brt_listener_model
 )
+
+# avnd_make_standalone(
+#   TARGET BrtListenerModel
+#   MAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/src/Processor.hpp"
+#   MAIN_CLASS BrtListenerModel
+#   C_NAME brt_listener_model
+# )
+
 
 option (BRT_CREATE_VST3_INSTALLER "Create or not an installer for the VST3 Plugin" ON)
 
