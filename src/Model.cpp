@@ -51,9 +51,18 @@ void BrtListenerModel::operator()(int bufferSize)
 }
 
 void BrtListenerModel::prepare(halp::setup info) {
-  globalParameters.SetSampleRate(info.rate);
-  globalParameters.SetBufferSize(info.frames);
-  prepareBRT();
+      if(!ready)
+      {
+        globalParameters.SetSampleRate(info.rate);
+        globalParameters.SetBufferSize(info.frames);
+        prepareBRT();
+      }
+      else
+      {
+        std::cerr
+            << "Warning: in brt_listener_model: Ignoring attempt to reload resources"
+            << std::endl;  
+      }
 }
 
 void BrtListenerModel::prepareBRT()
@@ -75,7 +84,7 @@ void BrtListenerModel::prepareBRT()
   fs::path sofaFilePath;
   fs::path ildFilePath;
 
-#ifdef AVND_VST3
+#if(defined(AVND_VST3) || defined(AVND_PD))
  #ifdef _WIN32
   //char* appdata = std::getenv("APPDATA");
   auto resourcePath = fs::path{std::getenv("APPDATA")};
@@ -88,7 +97,6 @@ void BrtListenerModel::prepareBRT()
       sofaFilePath = resourcePath / "HRTF";
       ildFilePath = resourcePath / "ILD";
   }
-
 #endif
 
   sofaFilePath.append(SOFA_FILEPATH);
@@ -184,6 +192,8 @@ bool BrtListenerModel::LoadILD(const std::string & _ildFilePath) {
     }            
 }
 
+#if(AVND_VST3)
+
 /*
   This function is based on PApplet::map which is part of the Processing project - http://processing.org
 
@@ -220,6 +230,26 @@ void BrtListenerModel::setVST3SourceAzimuth(float vstValue)
     setSourceAzimuth(newAzimuth);
 }
 
+void BrtListenerModel::setVST3SourceElevation(float vstValue)
+{
+    // FIXME: Make sure vstValue is between 0 and 1.
+    float newElevation = 0.0;
+    if(vstValue <= 0.5)
+        newElevation = map(vstValue, 0, 0.5, PI_F / 2.0, 0);
+    else
+        newElevation = map(vstValue, 0.5, 1, 2.0 * PI_F, 3.0 * PI_F / 2.0);
+    setSourceElevation(newElevation);
+}
+
+void BrtListenerModel::setVST3SourceDistance(float vstValue)
+{
+    float newDistance = 0.0;
+    newDistance = map(vstValue, 0., 1., UI_MIN_DISTANCE, UI_MAX_DISTANCE);
+    setSourceDistance(newDistance);
+}
+
+#endif
+
 void BrtListenerModel::setSourceAzimuth(float newAzimuth)
 {
     Common::CVector3 newPosition;
@@ -230,14 +260,7 @@ void BrtListenerModel::setSourceAzimuth(float newAzimuth)
     sourceAzimuth = newAzimuth;
 }
 
-void BrtListenerModel::setVST3SourceElevation(float vstValue)
-{
-    // FIXME: Make sure vstValue is between 0 and 1.
-    float newElevation = 0.0;
-    if(vstValue <= 0.5) newElevation = map(vstValue, 0, 0.5, PI_F / 2.0, 0);
-    else newElevation = map(vstValue, 0.5, 1, 2.0 * PI_F, 3.0 * PI_F / 2.0);
-    setSourceElevation(newElevation);
-}
+
 
 void BrtListenerModel::setSourceElevation(float newElevation)
 {
@@ -248,13 +271,6 @@ void BrtListenerModel::setSourceElevation(float newElevation)
     newPose.SetPosition(newPosition);
     source->SetSourceTransform(newPose);
     sourceElevation = newElevation;
-}
-
-void BrtListenerModel::setVST3SourceDistance(float vstValue)
-{
-    float newDistance = 0.0;
-    newDistance = map(vstValue, 0., 1., 0.1, 2.0);
-    setSourceDistance(newDistance);
 }
 
 void BrtListenerModel::setSourceDistance(float newDistance)

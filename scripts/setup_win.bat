@@ -6,6 +6,7 @@ echo %appdata%
 pushd %~dp0
 xcopy /s ..\resources\  "%appdata%\es.uma.3ddiana.brt\Resources\"
 xcopy /s ..\vst3plugins\ "%commonProgramFiles%\VST3\"
+xcopy /s ..\pd\ "%Program Files(x86)%\pd\extra\brt\"
 popd
 
 pause
