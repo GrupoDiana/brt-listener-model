@@ -13,7 +13,7 @@
 constexpr int HRTFRESAMPLINGSTEP = 15;
 #define ILD_NearFieldEffect_44100 "NearFieldCompensation_ILD_44100.sofa"
 constexpr float SOURCE1_INITIAL_AZIMUTH = std::numbers::pi_v<float> / 2.0;
-constexpr float SOURCE1_INITIAL_ELEVATION = std::numbers::pi_v<float> / 2.0;
+constexpr float SOURCE1_INITIAL_ELEVATION = 0.f;
 constexpr float SOURCE1_INITIAL_DISTANCE = 0.1f;
 constexpr float UI_MIN_AZIMUTH = -90.0;
 constexpr float UI_MAX_AZIMUTH = 90.0;
@@ -27,6 +27,8 @@ template <typename C>
   requires halp::has_logger<C>
 struct BrtListenerModel
 {
+    BrtListenerModel() noexcept{}
+    
   [[no_unique_address]] typename C::logger_type logger;
 
 #ifdef NDEBUG
@@ -96,6 +98,18 @@ struct BrtListenerModel
           m.setSourceDistance(value);
       }
     } sDistance;
+      
+    struct
+      : halp::toggle<"enableNearField", halp::toggle_setup{.init = true}>
+      {
+          void update(BrtListenerModel &m) {
+              if (m.ready) {
+                  if (value) m.listener->EnableNearFieldEffect();
+                  else m.listener->DisableNearFieldEffect();
+                  m.logger.trace("Near field effect: {}", value);
+              }
+        }
+      } enableNearField;
 
 #elif defined(AVND_VST3)
     // VST3 input parameters ranging 0 to 1
@@ -112,12 +126,12 @@ struct BrtListenerModel
         halp::range{.min = 0., .max = 1., .init = 0}>
         sDistance;
 #endif
-    halp::toggle<"enableNearField", halp::toggle_setup{.init = true}> enableNearField;
+
   } inputs;
 
   struct
   {
-    halp::fixed_audio_bus<"Input", float, 2> audio;
+    halp::fixed_audio_bus<"Output", float, 2> audio;
   } outputs;
 
   /**
@@ -131,11 +145,6 @@ struct BrtListenerModel
     {
       auto& in = inputs.audio;
       auto& out = outputs.audio;
-
-      if(inputs.enableNearField)
-        listener->EnableNearFieldEffect();
-      else
-        listener->DisableNearFieldEffect();
 
 #if defined(AVND_VST3)
       float sAzimuth = inputs.sAzimuth.value;
@@ -176,13 +185,13 @@ struct BrtListenerModel
       globalParameters.SetBufferSize(info.frames);
       prepareBRT();
     }
-    else
-    {
-      std::cerr << "Warning: in brt_listener_model: Ignoring attempt to reload resources"
-                << std::endl;
-      logger.warn(
-          "WARNING: in brt_listener_model: Ignoring attempt to reload resources", "");
-    }
+    // else
+    // {
+    //   std::cerr << "Warning: in brt_listener_model: Ignoring attempt to reload resources"
+    //             << std::endl;
+    //   logger.warn(
+    //       "WARNING: in brt_listener_model: Ignoring attempt to reload resources", "");
+    // }
 
   }
 #if(AVND_VST3)
@@ -246,7 +255,7 @@ struct BrtListenerModel
     Common::CTransform newPose = source->GetCurrentSourceTransform();
     newPose.SetPosition(newPosition);
     logger.trace("* Azimuth: {}", newAzimuth);
-    logger.trace("* Pose is at:{},{}", newPose.GetPosition().x, newPose.GetPosition().y, newPose.GetPosition().z);
+    logger.trace("* Pose is at:{},{},{}", newPose.GetPosition().x, newPose.GetPosition().y, newPose.GetPosition().z);
     source->SetSourceTransform(newPose);
     sourceAzimuth = newAzimuth;
       }
@@ -264,7 +273,7 @@ struct BrtListenerModel
     newPose.SetPosition(newPosition);
     logger.trace("* Elevation: {}", newElevation);
     logger.trace(
-        "* Pose is at:{},{}", newPose.GetPosition().x, newPose.GetPosition().y,
+        "* Pose is at:{},{},{}", newPose.GetPosition().x, newPose.GetPosition().y,
         newPose.GetPosition().z);
     source->SetSourceTransform(newPose);
     sourceElevation = newElevation;
@@ -281,9 +290,9 @@ struct BrtListenerModel
     newPosition = Spherical2Cartesians(sourceAzimuth, sourceElevation, newDistance);
     Common::CTransform newPose = source->GetCurrentSourceTransform();
     newPose.SetPosition(newPosition);
-    logger.trace("* Azimuth: {}", newDistance);
+    logger.trace("* Distance: {}", newDistance);
     logger.trace(
-        "* Pose is at:{},{}", newPose.GetPosition().x, newPose.GetPosition().y,
+        "* Pose is at:{},{},{}", newPose.GetPosition().x, newPose.GetPosition().y,
         newPose.GetPosition().z);
     source->SetSourceTransform(newPose);
     sourceDistance = newDistance;
