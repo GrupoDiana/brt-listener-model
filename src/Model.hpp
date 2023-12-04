@@ -383,55 +383,6 @@ struct BrtListenerModel
     source = brtManager.CreateSoundSource<BRTSourceModel::CSourceSimpleModel>(
         "source1");                       // Instatiate a BRT Sound Source
     listener->ConnectSoundSource(source); // Connect Source to the listener
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     brtManager.EndSetup();
     Common::CTransform sourcePose = Common::CTransform();
     sourceAzimuth = SOURCE1_INITIAL_AZIMUTH;
