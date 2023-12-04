@@ -255,7 +255,7 @@ struct BrtListenerModel
     Common::CTransform newPose = source->GetCurrentSourceTransform();
     newPose.SetPosition(newPosition);
     logger.trace("* Azimuth: {}", newAzimuth);
-    logger.trace("* Pose is at:{},{},{}", newPose.GetPosition().x, newPose.GetPosition().y, newPose.GetPosition().z);
+    logger.trace("* Source is at:{},{},{}", newPose.GetPosition().x, newPose.GetPosition().y, newPose.GetPosition().z);
     source->SetSourceTransform(newPose);
     sourceAzimuth = newAzimuth;
       }
@@ -273,7 +273,7 @@ struct BrtListenerModel
     newPose.SetPosition(newPosition);
     logger.trace("* Elevation: {}", newElevation);
     logger.trace(
-        "* Pose is at:{},{},{}", newPose.GetPosition().x, newPose.GetPosition().y,
+        "* Source is at:{},{},{}", newPose.GetPosition().x, newPose.GetPosition().y,
         newPose.GetPosition().z);
     source->SetSourceTransform(newPose);
     sourceElevation = newElevation;
@@ -292,7 +292,7 @@ struct BrtListenerModel
     newPose.SetPosition(newPosition);
     logger.trace("* Distance: {}", newDistance);
     logger.trace(
-        "* Pose is at:{},{},{}", newPose.GetPosition().x, newPose.GetPosition().y,
+        "* Source is at:{},{},{}", newPose.GetPosition().x, newPose.GetPosition().y,
         newPose.GetPosition().z);
     source->SetSourceTransform(newPose);
     sourceDistance = newDistance;

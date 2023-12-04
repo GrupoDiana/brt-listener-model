@@ -2,11 +2,11 @@
 #X obj 424 637 brt_listener_model;
 #X obj 480 756 dac~;
 #X obj 382 376 vsl 15 128 -90 90 0 0 empty empty empty 0 -9 0 10 #fcfcfc
-#000000 #000000 6350 1;
+#000000 #000000 0 1;
 #X obj 472 375 vsl 15 128 -90 90 0 0 empty empty empty 0 -9 0 10 #fcfcfc
-#000000 #000000 6350 1;
+#000000 #000000 0 1;
 #X obj 588 381 vsl 15 128 0.1 2 0 0 empty empty empty 0 -9 0 10 #fcfcfc
-#000000 #000000 6016 1;
+#000000 #000000 0 1;
 #X msg 382 550 sAzimuth \$1;
 #X msg 474 550 sElevation \$1;
 #X obj 150 340 readsf~;
@@ -20,11 +20,13 @@
 #X obj 474 264 loadbang;
 #X msg 422 328 0;
 #X msg 572 330 1;
-#X obj 702 506 tgl 15 0 empty empty Enable\ Near\ Field 17 7 0 10 #fcfcfc
-#000000 #000000 0 1;
-#X msg 180 220 open /Users/dianauma/Desktop/MusArch_Sample_44.1kHz_AnechoicFemaleSpeech.wav
+#X obj 702 506 tgl 15 0 empty empty Enable\\\ Near\\\ Field 17 7 0
+10 #fcfcfc #000000 #000000 0 1;
+#X msg 214 220 open /Users/dianauma/Desktop/MusArch_Sample_44.1kHz_AnechoicFemaleSpeech.wav
 , f 78;
 #X msg 703 549 enableNearField \$1;
+#X msg 201 188 open C:/Users/lmtan/Desktop/MusArch_Sample_44.1kHz_Anechoic_FemaleSpeech.wav
+, f 78;
 #X connect 0 0 1 0;
 #X connect 0 1 1 1;
 #X connect 2 0 5 0;
@@ -33,7 +35,7 @@
 #X connect 5 0 0 0;
 #X connect 6 0 0 0;
 #X connect 7 0 0 0;
-#X connect 8 0 18 0;
+#X connect 8 0 20 0;
 #X connect 9 0 7 0;
 #X connect 10 0 7 0;
 #X connect 13 0 0 0;
@@ -43,5 +45,5 @@
 #X connect 15 0 3 0;
 #X connect 16 0 4 0;
 #X connect 17 0 19 0;
-#X connect 18 0 7 0;
 #X connect 19 0 0 0;
+#X connect 20 0 7 0;
