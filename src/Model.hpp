@@ -196,6 +196,31 @@ struct BrtListenerModel
   }
 #if(AVND_VST3)
 
+  /*
+  This function is based on PApplet::map which is part of the Processing project - http://processing.org
+
+  Copyright (c) 2012-15 The Processing Foundation
+  Copyright (c) 2004-12 Ben Fry and Casey Reas
+  Copyright (c) 2001-04 Massachusetts Institute of Technology
+
+  distributed under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation, version 2.1.
+*/
+  float map(float value, float start1, float stop1, float start2, float stop2)
+  {
+    float outgoing = start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
+#ifndef NDEBUG
+    if(std::isnan(outgoing))
+    {
+      volatile int errorNan;
+    }
+    else if(std::isinf(outgoing))
+    {
+      volatile int errorInf;
+    }
+#endif
+    return outgoing;
+  }
 
   /**
    * @brief Set the source Azimuth in VST3 range. 
@@ -501,28 +526,4 @@ struct BrtListenerModel
   std::vector<std::shared_ptr<BRTServices::CILD>> ILD_list;
 };
 
-/*
-  This function is based on PApplet::map which is part of the Processing project - http://processing.org
 
-  Copyright (c) 2012-15 The Processing Foundation
-  Copyright (c) 2004-12 Ben Fry and Casey Reas
-  Copyright (c) 2001-04 Massachusetts Institute of Technology
-
-  distributed under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation, version 2.1.
-*/
-float map(float value, float start1, float stop1, float start2, float stop2)
-{
-  float outgoing = start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
-#ifndef NDEBUG
-  if(std::isnan(outgoing))
-  {
-    volatile int errorNan;
-  }
-  else if(std::isinf(outgoing))
-  {
-    volatile int errorInf;
-  }
-#endif
-  return outgoing;
-}
