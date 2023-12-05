@@ -3,9 +3,10 @@
 
 echo "Installing resources..."
 mkdir -p /Library/Application\ Support/es.uma.3ddiana.brt/Resources
-cp -r ../resources/* /Library/Application\ Support/es.uma.3ddiana.brt/Resources/
+cp -vr ../resources/* /Library/Application\ Support/es.uma.3ddiana.brt/Resources/
 echo "finsihed"
 
 echo "\nInstalling plug-ins..."
-cp -r ../vst3plugins/BrtListenerModel_vst3.vst3 /Library/Audio/Plug-ins/VST3/
+mkdir -p /Library/Audio/Plug-ins/VST3/
+cp -vr ../vst3plugins/BrtListenerModel_vst3.vst3 /Library/Audio/Plug-ins/VST3/
 echo "finished"
