@@ -400,6 +400,12 @@ struct BrtListenerModel
     if(ildSofaLoaded)
     {
       listener->SetILD(ILD_list[0]);
+#if defined(AVND_VST3)
+        // The VST3 porting does not at the moment expose the toggle to enable or disable
+        // near field. We enable it.
+        listener->EnableNearFieldEffect();
+        std::cout << "Enabling Near Field Effect" << std::endl;
+#endif
     }
 
     // Setup source
