@@ -1,53 +1,25 @@
-# Avendish processor template
+# BRT listener model
 
-This provides a basic, canonical template for making objects with [Avendish](https://github.com/celtera/avendish).
+Work in progress with [Avendish](https://github.com/celtera/avendish) to port the [BRT Library](https://github.com/GrupoDiana/BRTLibrary) to PureData, VST3 and Max.
+The portings are tested for Windows/MacOS. 
 
-Note that some libraries are needed to access the various back-ends. They can be passed to CMake.
+# Dependencies
 
-These instructions are mostly useful on Windows / macOS as on Linux one can just install the packages from the OS package manager.
-
-For instance, on Arch Linux:
-
-```bash
-$ sudo pacman -S vst3sdk pd pybind11
-```
-
-will install things.
-
-To see a complete build procedure, one can refer to the [Github actions workflows](.github/workflows/), which compile 
-the project on clean virtual machines.
-
-## Python
- 
-[Get it there](https://github.com/pybind/pybind11) and pass to cmake:
-```cpp
--Dpybind11_DIR=path/to/pybind11
-```
-
-## VST 3 SDK
-
-[Get it there](https://github.com/steinbergmedia/vst3sdk) and pass to cmake:
-
-```cpp
--DVST3_SDK_ROOT=path/to/vst3
-```
-
-## Max SDK
-
-[Get it there](https://cycling74.com/downloads/sdk) and pass to cmake:
-```cmake
--DAVND_MAXSDK_PATH=path/to/maxsdk
-```
-
-## PureData
-
-[Get it there](https://github.com/pure-data/pure-data), build it, and pass to cmake:
+* The BRT Library is automatically fetched from github, but not its dependencies, which are:
+   * Nlohmann json: [Get it there](https://github.com/nlohmann/json) and install.
+   * Libmysofa: [Get it from our fork here](https://github.com/GrupoDiana/libmysofa/tree/cmake) and install.  
+* For the PureData, [Get it there](https://github.com/pure-data/pure-data), build it, and pass to cmake:
 
 ```cmake
--DCMAKE_PREFIX_PATH=path/to/the/folder/containing/m_pd.h
+-DCMAKE_PREFIX_PATH=path/to/the/folder/containing/m_pd.h -DBRT_CREATE_PD=ON
+```
+* For VST3, [Get it there](https://github.com/steinbergmedia/vst3sdk) and pass to cmake:
+
+```cpp
+-DVST3_SDK_ROOT=path/to/vst3 -DBRT_CREATE_VST3=ON
 ```
 
 ## TODO
 
-* Support importing them with a package manager
-* Audio support for standalone
+* Support for Max SDK
+* Test on Linux
