@@ -66,12 +66,6 @@ endif(BRT_CREATE_VST3)
 
 #1) First install files to directory set by CMAKE_INSTALL_PATH
 install(FILES scripts/readme.txt DESTINATION brt/)
-if (WIN32)
-   #install(PROGRAMS scripts/setup_win.bat DESTINATION brt/scripts)
-elseif(APPLE)
-  # install(PROGRAMS scripts/setup_mac.sh DESTINATION brt/scripts )
-endif(WIN32)
-
 install(DIRECTORY resources DESTINATION brt)
 
 if (BRT_CREATE_VST3)
