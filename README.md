@@ -3,6 +3,8 @@
 Work in progress with [Avendish](https://github.com/celtera/avendish) to port the [BRT Library](https://github.com/GrupoDiana/BRTLibrary) to PureData, VST3 and Max.
 The portings are tested for Windows/MacOS. 
 
+The BRT Listener Model allows you to spatialise a monaural sound using an HRTF stored in [SOFA](https://www.sofaconventions.org/mediawiki/index.php/SOFA_(Spatially_Oriented_Format_for_Acoustics)) format. 
+
 ## Dependencies
 
 * The BRT Library is automatically fetched from github, but not its dependencies, which are:
