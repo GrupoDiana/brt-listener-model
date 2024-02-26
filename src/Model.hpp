@@ -23,6 +23,10 @@ constexpr float UI_MIN_DISTANCE = 0.1f;
 constexpr float UI_MAX_DISTANCE = 2.0f;
 constexpr float DEG_TO_RAD = std::numbers::pi_v<float> / 180.0;
 
+// DELETE ME THIS IS JUST FOR VISUAL STUDIOOOO
+
+#define AVND_PD 1 
+
 template <typename C>
   requires halp::has_logger<C>
 struct BrtListenerModel
@@ -110,6 +114,25 @@ struct BrtListenerModel
               }
         }
       } enableNearField;
+
+    struct
+      : halp::lineedit<"LoadSofa", "">
+    {
+          void update(BrtListenerModel &m) {
+            std::string s = value;
+            std::string delimiter = "|"; 
+            size_t last = 0; size_t next = 0; 
+            next = s.find(delimiter, last); 
+            m.logger.trace("HRTF_id: {}", s.substr(last, next-last));   
+            last = next + 1;
+            next = s.find(delimiter,last); 
+            m.logger.trace("Path: {}", s.substr(last,next-last));
+            last = next + 1;
+            next = s.find(delimiter,last);
+            m.logger.trace("Sampling Step: {}", s.substr(last));
+          } 
+    } LoadSofa;
+    
 
 #elif defined(AVND_VST3)
     // VST3 input parameters ranging 0 to 1

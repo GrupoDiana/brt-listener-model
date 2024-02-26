@@ -1,0 +1,52 @@
+#N canvas 2158 74 1255 899 12;
+#X obj 680 627 brt_listener_model;
+#X obj 736 746 dac~;
+#X obj 638 366 vsl 15 128 -90 90 0 0 empty empty empty 0 -9 0 10 #fcfcfc
+#000000 #000000 6350 1;
+#X obj 728 365 vsl 15 128 -90 90 0 0 empty empty empty 0 -9 0 10 #fcfcfc
+#000000 #000000 6350 1;
+#X obj 844 371 vsl 15 128 0.1 2 0 0 empty empty empty 0 -9 0 10 #fcfcfc
+#000000 #000000 6016 1;
+#X msg 638 540 sAzimuth \$1;
+#X msg 730 540 sElevation \$1;
+#X obj 406 330 readsf~;
+#X obj 430 120 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc
+#000000 #000000;
+#X msg 313 149 1;
+#X msg 366 150 0;
+#X text 314 129 play;
+#X text 363 130 stop;
+#X msg 845 539 sDistance \$1;
+#X obj 730 254 loadbang;
+#X msg 678 318 0;
+#X msg 828 320 1;
+#X obj 958 496 tgl 15 0 empty empty Enable\ Near\\\\\ Field 17 7 0
+10 #fcfcfc #000000 #000000 0 1;
+#X msg 470 210 open /Users/dianauma/Desktop/MusArch_Sample_44.1kHz_AnechoicFemaleSpeech.wav
+, f 78;
+#X msg 959 539 enableNearField \$1;
+#X msg 480 160 open C:/Users/lmtan/Desktop/MusArch_Sample_44.1kHz_Anechoic_FemaleSpeech.wav
+, f 78;
+#X msg 100 510 LoadSofa listener1|/Users/dianauma/Documents/Pd/3DTI_HRTF_IRC1008_128s_44100Hz.sofa|15
+;
+#X connect 0 0 1 0;
+#X connect 0 1 1 1;
+#X connect 2 0 5 0;
+#X connect 3 0 6 0;
+#X connect 4 0 13 0;
+#X connect 5 0 0 0;
+#X connect 6 0 0 0;
+#X connect 7 0 0 0;
+#X connect 8 0 18 0;
+#X connect 9 0 7 0;
+#X connect 10 0 7 0;
+#X connect 13 0 0 0;
+#X connect 14 0 15 0;
+#X connect 14 0 16 0;
+#X connect 15 0 2 0;
+#X connect 15 0 3 0;
+#X connect 16 0 4 0;
+#X connect 17 0 19 0;
+#X connect 18 0 7 0;
+#X connect 19 0 0 0;
+#X connect 21 0 0 0;

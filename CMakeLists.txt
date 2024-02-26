@@ -79,7 +79,7 @@ if (BRT_CREATE_VST3)
 endif(BRT_CREATE_VST3)
 
 if (BRT_CREATE_PD)
-      install(PROGRAMS examples/pd/test-listener-model.pd DESTINATION brt/examples/pd/)
+      install(PROGRAMS examples/pd/test-listener-model-sofa.pd DESTINATION brt/examples/pd/)
   if (WIN32)
       install(PROGRAMS scripts/setup_pd_win.bat DESTINATION brt/scripts)
       install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/pd/Release/ DESTINATION brt/pd/)
