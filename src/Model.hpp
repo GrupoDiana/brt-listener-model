@@ -119,19 +119,45 @@ struct BrtListenerModel
       : halp::lineedit<"LoadSofa", "">
     {
           void update(BrtListenerModel &m) {
+            if (m.ready) {
             std::string s = value;
             std::string delimiter = "|"; 
             size_t last = 0; size_t next = 0; 
-            next = s.find(delimiter, last); 
-            m.logger.trace("HRTF_id: {}", s.substr(last, next-last));   
-            last = next + 1;
-            next = s.find(delimiter,last); 
-            m.logger.trace("Path: {}", s.substr(last,next-last));
+            next = s.find(delimiter, last);
+            std::string hrtfid = s.substr(last, next-last); 
+            m.logger.trace("HRTF_id: {}", hrtfid);   
             last = next + 1;
             next = s.find(delimiter,last);
-            m.logger.trace("Sampling Step: {}", s.substr(last));
+            std::string path =  s.substr(last,next-last);
+            m.logger.trace("Path: {}", path);
+            last = next + 1;
+            next = s.find(delimiter,last);
+            int samplingstep = std::stoi( s.substr(last));
+            m.logger.trace("Sampling Step: {}", samplingstep);
+            m.LoadSofaFile(hrtfid,path,samplingstep);
+            }
           } 
     } LoadSofa;
+
+    struct 
+      : halp::lineedit<"SetHRTF", "">
+    {
+      void update(BrtListenerModel &m) {
+        if (m.ready) {
+        std::string key = value; 
+        if (auto search = m.HRTF_map.find(key); search != m.HRTF_map.end())
+        {
+          m.logger.trace("Changing HRTF to \'{}\'", search->first);
+          m.listener->SetHRTF(search->second);
+        }
+        else 
+        {
+          m.logger.trace("Could not find HRTF \'{}\'", key);
+        }
+        }
+      }
+    } SetHRTF;
+    
     
 
 #elif defined(AVND_VST3)
@@ -374,7 +400,7 @@ struct BrtListenerModel
     // Setup Listener
     brtManager.BeginSetup();
     listener = brtManager.CreateListener<BRTListenerModel::CListenerHRTFbasedModel>(
-        "listener1");
+        "defaultlistener");
     brtManager.EndSetup();
     Common::CTransform listenerPosition
         = Common::CTransform(); // Setting listener in (0,0,0)
@@ -409,12 +435,12 @@ struct BrtListenerModel
     ildFilePath.append(ILD_NearFieldEffect_44100);
 
     // Load hardcoded HRTF
-    bool hrtfSofaLoaded = LoadSofaFile(sofaFilePath.string());
+    bool hrtfSofaLoaded = LoadSofaFile("defaultlistener", sofaFilePath.string(), HRTFRESAMPLINGSTEP);
 
     // Set first HRTF for listener
     if(hrtfSofaLoaded)
     {
-      listener->SetHRTF(HRTF_list[0]);
+      listener->SetHRTF(HRTF_map["defaultlistener"]);
     }
 
     // LOAD NEARFIELD ILD coefficients
@@ -449,13 +475,15 @@ struct BrtListenerModel
   }
 
   /**
-   * @brief Load SOFA HRTF File
+   * @brief LoadSofaFile
    * 
+   * @param hrtfid 
    * @param _filePath 
+   * @param resamplingstep 
    * @return true 
    * @return false 
    */
-  bool LoadSofaFile(const std::string& _filePath)
+  bool LoadSofaFile(const std::string& hrtfid, const std::string& _filePath, int resamplingstep)
   {
 
     std::shared_ptr<BRTServices::CHRTF> hrtf = std::make_shared<BRTServices::CHRTF>();
@@ -474,11 +502,11 @@ struct BrtListenerModel
                 << globalParameters.GetSampleRate() << ")." << std::endl;
       return false;
     }
-    bool result = sofaReader.ReadHRTFFromSofa(_filePath, hrtf, HRTFRESAMPLINGSTEP);
+    bool result = sofaReader.ReadHRTFFromSofa(_filePath, hrtf, resamplingstep);
     if(result)
     {
       std::cout << ("HRTF Sofa file loaded successfully.") << std::endl;
-      HRTF_list.push_back(hrtf);
+      HRTF_map[hrtfid] = hrtf;
       return true;
     }
     else
@@ -551,7 +579,8 @@ struct BrtListenerModel
   float sourceElevation{SOURCE1_INITIAL_ELEVATION};
   float sourceDistance{SOURCE1_INITIAL_DISTANCE};
   BRTReaders::CSOFAReader sofaReader;
-  std::vector<std::shared_ptr<BRTServices::CHRTF>> HRTF_list;
+  //std::vector<std::shared_ptr<BRTServices::CHRTF>> HRTF_list;
+  std::map<std::string, std::shared_ptr<BRTServices::CHRTF>> HRTF_map;
   std::vector<std::shared_ptr<BRTServices::CILD>> ILD_list;
 };
 
