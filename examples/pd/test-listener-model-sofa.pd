@@ -1,16 +1,16 @@
-#N canvas 2255 51 1567 861 12;
+#N canvas 3151 104 1518 755 12;
 #X obj 940 647 brt_listener_model;
 #X obj 996 766 dac~;
 #X obj 898 386 vsl 15 128 -90 90 0 0 empty empty empty 0 -9 0 10 #fcfcfc
-#000000 #000000 6350 1;
+#000000 #000000 0 1;
 #X obj 988 385 vsl 15 128 -90 90 0 0 empty empty empty 0 -9 0 10 #fcfcfc
-#000000 #000000 6350 1;
+#000000 #000000 0 1;
 #X obj 1104 391 vsl 15 128 0.1 2 0 0 empty empty empty 0 -9 0 10 #fcfcfc
-#000000 #000000 6016 1;
+#000000 #000000 0 1;
 #X msg 898 560 sAzimuth \$1;
 #X msg 990 560 sElevation \$1;
 #X obj 666 350 readsf~;
-#X obj 690 140 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc
+#X obj 713 127 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc
 #000000 #000000;
 #X msg 573 169 1;
 #X msg 626 170 0;
@@ -20,24 +20,19 @@
 #X obj 990 274 loadbang;
 #X msg 938 338 0;
 #X msg 1088 340 1;
-#X obj 1218 516 tgl 15 0 empty empty Enable\ Near\\\\\ Field 17 7 0
-10 #fcfcfc #000000 #000000 0 1;
-#X msg 730 230 open /Users/dianauma/Desktop/MusArch_Sample_44.1kHz_AnechoicFemaleSpeech.wav
+#X obj 1218 516 tgl 15 0 empty empty Enable\\\ Near\\\\\\\ Field 17
+7 0 10 #fcfcfc #000000 #000000 0 1;
+#X msg 737 232 open /Users/dianauma/Desktop/MusArch_Sample_44.1kHz_AnechoicFemaleSpeech.wav
 , f 78;
 #X msg 1219 559 enableNearField \$1;
 #X msg 740 180 open C:/Users/lmtan/Desktop/MusArch_Sample_44.1kHz_Anechoic_FemaleSpeech.wav
 , f 78;
-#X msg 400 510 LoadSofa listener1|/Users/dianauma/Documents/Pd/3DTI_HRTF_IRC1008_128s_44100Hz.sofa|15
-;
 #X obj 200 260 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc
 #000000 #000000;
 #X obj 200 330 t b b;
-#X floatatom 310 340 5 0 0 0 - - -, f 5;
-#X msg 310 378 set \$1;
-#X obj 310 420 change;
-#X obj 280 380 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc
-#000000 #000000;
-#X msg 190 540 SetHRTF listener1;
+#X msg 328 475 LoadSofa listener2|C:/Users/lmtan/Desktop/3DTI_HRTF_IRC1013_128s_44100Hz.sofa|15
+;
+#X msg 127 495 SetHRTF listener1;
 #X connect 0 0 1 0;
 #X connect 0 1 1 1;
 #X connect 2 0 5 0;
@@ -46,7 +41,7 @@
 #X connect 5 0 0 0;
 #X connect 6 0 0 0;
 #X connect 7 0 0 0;
-#X connect 8 0 18 0;
+#X connect 8 0 20 0;
 #X connect 9 0 7 0;
 #X connect 10 0 7 0;
 #X connect 13 0 0 0;
@@ -56,14 +51,10 @@
 #X connect 15 0 3 0;
 #X connect 16 0 4 0;
 #X connect 17 0 19 0;
-#X connect 18 0 7 0;
 #X connect 19 0 0 0;
-#X connect 21 0 0 0;
-#X connect 22 0 23 0;
-#X connect 23 0 28 0;
-#X connect 23 1 26 0;
-#X connect 24 0 25 0;
-#X connect 25 0 26 0;
-#X connect 26 0 21 0;
-#X connect 27 0 26 0;
-#X connect 28 0 0 0;
+#X connect 20 0 7 0;
+#X connect 21 0 22 0;
+#X connect 22 0 24 0;
+#X connect 22 1 23 0;
+#X connect 23 0 0 0;
+#X connect 24 0 0 0;
