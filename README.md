@@ -24,7 +24,7 @@ The BRT Listener Model allows you to spatialise a monaural sound using an HRTF s
 ## Examples 
 
 There are two examples for PureData and REAPER in the examples folder. 
-![test-brt-listener-model.pd](https://github.com/GrupoDiana/brt-listener-model/assets/1093084/34008568-2c67-459c-bd25-c19697f05377)
+![test-pure-data-sofa](https://github.com/GrupoDiana/brt-listener-model/assets/1093084/2afcb52f-91cc-4b42-b190-64820e766bd6)
 
 ![test-brt-listener-44100.RPP](https://github.com/GrupoDiana/brt-listener-model/assets/1093084/bef84219-41ae-4c28-b453-00713b9a21f0)
 
@@ -35,6 +35,7 @@ There are two examples for PureData and REAPER in the examples folder.
 
 * Support for Max SDK
 * Test on Linux
+* Port other-than-the-listener models in BRT
 
 ## Credits
 
