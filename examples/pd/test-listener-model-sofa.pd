@@ -30,9 +30,9 @@
 #X obj 200 260 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc
 #000000 #000000;
 #X obj 200 330 t b b;
-#X msg 328 475 LoadSofa listener2|C:/Users/lmtan/Desktop/3DTI_HRTF_IRC1013_128s_44100Hz.sofa|15
-;
 #X msg 127 495 SetHRTF listener1;
+#X msg 328 475 LoadSofa listener1|C:/Users/lmtan/Desktop/3DTI_HRTF_IRC1013_128s_44100Hz.sofa|15
+;
 #X connect 0 0 1 0;
 #X connect 0 1 1 1;
 #X connect 2 0 5 0;
@@ -54,7 +54,7 @@
 #X connect 19 0 0 0;
 #X connect 20 0 7 0;
 #X connect 21 0 22 0;
-#X connect 22 0 24 0;
-#X connect 22 1 23 0;
+#X connect 22 0 23 0;
+#X connect 22 1 24 0;
 #X connect 23 0 0 0;
 #X connect 24 0 0 0;
